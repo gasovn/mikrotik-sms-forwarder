@@ -4,8 +4,8 @@
 :global mxRoom
 :global mxToken
 :global telegramEnabled
-:global tgWorkerUrl
-:global tgSecret
+:global tgToken
+:global tgChat
 
 :global smsForwardSeq
 :if ([:typeof $smsForwardSeq] != "num") do={ :set smsForwardSeq 0 }
@@ -145,9 +145,10 @@
         } on-error={}
       }
       :if ($telegramEnabled) do={
-        :local body ("{\"text\":\"" . $inner . "\"}")
+        :local url ("https://api.telegram.org/bot" . $tgToken . "/sendMessage")
+        :local body ("{\"chat_id\":" . $tgChat . ",\"text\":\"" . $inner . "\"}")
         :do {
-          /tool fetch http-method=post url=$tgWorkerUrl http-header-field=("X-Auth: " . $tgSecret . ",Content-Type: application/json") http-data=$body mode=https keep-result=no
+          /tool fetch http-method=post url=$url http-header-field="Content-Type: application/json" http-data=$body mode=https keep-result=no
           :set okc true
         } on-error={}
       }
