@@ -63,10 +63,12 @@ RouterOS does not allow underscores in script variable names — keep the camelC
 Upload both files to the router, then load them as named scripts and add the scheduler:
 
 ```
-/system script add name=sms-config source=[/file get sms-config.rsc contents]
-/system script add name=sms-forward source=[/file get sms-forward.rsc contents]
-/system scheduler add name=sms-forward interval=10m on-event="/system script run sms-forward"
+/system script add name=sms-config policy=read,write,policy,test source=[/file get sms-config.rsc contents]
+/system script add name=sms-forward policy=read,write,policy,test source=[/file get sms-forward.rsc contents]
+/system scheduler add name=sms-forward interval=10m policy=read,write,policy,test on-event="/system script run sms-forward"
 ```
+
+The `policy` flags must match across the scripts and the scheduler: a scheduler can only run a named script whose policies it fully holds, so a scheduler with fewer policies than the script fails with `not enough permissions`.
 
 To change settings later, edit `sms-config` only; `sms-forward` reads it on every run.
 
